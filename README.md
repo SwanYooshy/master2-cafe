@@ -59,6 +59,7 @@ Body (raw - JSON):
 **Method:** DELETE
 **URL:** `http://localhost:8000/api/v1/products/1`
 
+## Catégories
 ### Lister toutes les catégories
 **Method:** GET
 **URL:** `http://localhost:8000/api/v1/categories`
@@ -147,9 +148,9 @@ Body (raw - JSON):
 ### Créer une commande
 **Method:** `POST`  
 **URL:** `http://localhost:8000/api/v1/orders`  
-Headers:
-Content-Type: application/json
-Accept: application/json
+**Headers:**  
+Content-Type: application/json  
+Accept: application/json  
 Body (raw - JSON):
 ```
 {
