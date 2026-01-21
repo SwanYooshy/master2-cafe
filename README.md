@@ -5,6 +5,7 @@
 php artisan db:seed --class=ProductSeeder
 php artisan db:seed --class=TablesSeeder
 php artisan db:seed --class=CategorySeeder
+php artisan db:seed --class=OrderSeeder
 ```
 
 ## Liste des commandes d'Api
