@@ -25,10 +25,11 @@ php artisan db:seed --class=OrderSeeder
 ### Mettre à jour un produit
 **Method:** `PUT`  
 **URL:** `http://localhost:8000/api/v1/products/1`  
-**Headers:**
-Content-Type: application/json
-Accept: application/json
+**Headers:**  
+Content-Type: application/json  
+Accept: application/json  
 Body (raw - JSON):
+```
 {
   "name": "Cappuccino Premium",
   "description": "Notre meilleur cappuccino",
@@ -52,6 +53,7 @@ Body (raw - JSON):
     }
   ]
 }
+```
 
 ## Supprimer un produit
 **Method:** DELETE
@@ -65,18 +67,20 @@ Body (raw - JSON):
 **Method:** `POST`
 **URL:** `http://localhost:8000/api/v1/products`  
 Body (raw - JSON):
+```
 {
   "name": "Croissant",
   "description": "Croissant au beurre frais",
   "price": 2.50,
   "category_id": 5
 }
+```
 
 ## Produit avec image (Form-data)
 **Method:** `POST`  
 **URL:** `http://localhost:8000/api/v1/products`  
-**Headers:**
-Accept: application/json
+**Headers:**  
+Accept: application/json  
 Body (form-data):
 ```
 name: Cappuccino Classic
@@ -104,25 +108,65 @@ variants[2][price]: 5.50
 ### Créer une table
 **Method:** `POST`  
 **URL:** `http://localhost:8000/api/v1/tables`  
-**Headers:**
-Content-Type: application/json
-Accept: application/json
+**Headers:**  
+Content-Type: application/json  
+Accept: application/json  
 Body (raw - JSON):
+```
 {
   "name": "Table 8"
 }
+```
 
 ### Mettre à jour une table
 **Method:** `PUT`  
 **URL:** `http://localhost:8000/api/v1/tables/1`  
-**Headers:**
+**Headers:**  
 Content-Type: application/json
 Accept: application/json
 Body (raw - JSON):
+```
 {
   "name": "Table 1 - Mise à jour"
 }
+```
 
-### DELETE - Supprimer une table
-**Method:** `DELETE`
+### Supprimer une table
+**Method:** `DELETE`  
 **URL:** `http://localhost:8000/api/v1/tables/1`
+
+## Orders
+### Lister toutes les commandes
+**Method:** `GET`  
+**URL:** `http://localhost:8000/api/v1/orders`  
+
+### Afficher une commande
+**Method:** `GET`  
+**URL:** `http://localhost:8000/api/v1/orders/1`  
+
+### Créer une commande
+**Method:** `POST`  
+**URL:** `http://localhost:8000/api/v1/orders`  
+Headers:
+Content-Type: application/json
+Accept: application/json
+Body (raw - JSON):
+```
+{
+  "table_id": 1,
+  "products": [
+    {
+      "product_id": 1,
+      "quantity": 2
+    },
+    {
+      "product_id": 3,
+      "quantity": 1
+    }
+  ]
+}
+```
+
+### Supprimer une commande
+**Method:** `DELETE`  
+**URL:** `http://localhost:8000/api/v1/orders/1`  
