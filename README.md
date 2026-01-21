@@ -9,7 +9,7 @@ php artisan db:seed --class=OrderSeeder
 ```
 
 ## Liste des commandes d'Api
-## Product
+## Produits
 ### Lister tous les produits
 **Method:** `GET`  
 **URL:** `http://localhost:8000/api/v1/products`
@@ -55,15 +55,15 @@ Body (raw - JSON):
 }
 ```
 
-## Supprimer un produit
+### Supprimer un produit
 **Method:** DELETE
 **URL:** `http://localhost:8000/api/v1/products/1`
 
-## Lister toutes les catégories
+### Lister toutes les catégories
 **Method:** GET
 **URL:** `http://localhost:8000/api/v1/categories`
 
-## Produit sans variantes
+### Produit sans variantes
 **Method:** `POST`
 **URL:** `http://localhost:8000/api/v1/products`  
 Body (raw - JSON):
@@ -76,7 +76,7 @@ Body (raw - JSON):
 }
 ```
 
-## Produit avec image (Form-data)
+### Produit avec image (Form-data)
 **Method:** `POST`  
 **URL:** `http://localhost:8000/api/v1/products`  
 **Headers:**  
@@ -135,7 +135,7 @@ Body (raw - JSON):
 **Method:** `DELETE`  
 **URL:** `http://localhost:8000/api/v1/tables/1`
 
-## Orders
+## Orders (les commandes client)
 ### Lister toutes les commandes
 **Method:** `GET`  
 **URL:** `http://localhost:8000/api/v1/orders`  
