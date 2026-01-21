@@ -23,7 +23,7 @@ php artisan db:seed --class=CategorySeeder
 
 ### Mettre à jour un produit
 **Method:** `PUT`  
-**URL:** `http://localhost:8000/api/v1/products/1`
+**URL:** `http://localhost:8000/api/v1/products/1`  
 **Headers:**
 Content-Type: application/json
 Accept: application/json
@@ -54,15 +54,15 @@ Body (raw - JSON):
 
 ## Supprimer un produit
 **Method:** DELETE
-**URL:** http://localhost:8000/api/v1/products/1
+**URL:** `http://localhost:8000/api/v1/products/1`
 
 ## Lister toutes les catégories
 **Method:** GET
-**URL:** http://localhost:8000/api/v1/categories
+**URL:** `http://localhost:8000/api/v1/categories`
 
 ## Produit sans variantes
-**Method:** POST
-**URL:** http://localhost:8000/api/v1/products
+**Method:** `POST`
+**URL:** `http://localhost:8000/api/v1/products`  
 Body (raw - JSON):
 {
   "name": "Croissant",
@@ -73,8 +73,7 @@ Body (raw - JSON):
 
 ## Produit avec image (Form-data)
 **Method:** `POST`  
-**URL:** `http://localhost:8000/api/v1/products`
-
+**URL:** `http://localhost:8000/api/v1/products`  
 **Headers:**
 Accept: application/json
 Body (form-data):
@@ -95,15 +94,15 @@ variants[2][price]: 5.50
 ## Tables
 ### Lister toutes les tables
 **Method:** `GET`  
-**URL:** `http://localhost:8000/api/v1/tables`
+**URL:** `http://localhost:8000/api/v1/tables`  
 
 ### Afficher une table
 **Method:** `GET`  
-**URL:** `http://localhost:8000/api/v1/tables/1`
+**URL:** `http://localhost:8000/api/v1/tables/1`  
 
 ### Créer une table
 **Method:** `POST`  
-**URL:** `http://localhost:8000/api/v1/tables`
+**URL:** `http://localhost:8000/api/v1/tables`  
 **Headers:**
 Content-Type: application/json
 Accept: application/json
@@ -114,7 +113,7 @@ Body (raw - JSON):
 
 ### Mettre à jour une table
 **Method:** `PUT`  
-**URL:** `http://localhost:8000/api/v1/tables/1`
+**URL:** `http://localhost:8000/api/v1/tables/1`  
 **Headers:**
 Content-Type: application/json
 Accept: application/json
