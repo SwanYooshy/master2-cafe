@@ -1,6 +1,6 @@
 # master2-cafe
 
-## lancement des factories :
+## lancement des factories (fournir en données la base de données) :
 ```zsh
 php artisan db:seed --class=ProductSeeder
 php artisan db:seed --class=TablesSeeder
@@ -59,8 +59,7 @@ Body (raw - JSON):
 **Method:** DELETE
 **URL:** `http://localhost:8000/api/v1/products/1`
 
-## Catégories
-### Lister toutes les catégories
+### Lister toutes les catégories de produits
 **Method:** GET
 **URL:** `http://localhost:8000/api/v1/categories`
 
@@ -98,7 +97,7 @@ variants[2][price]: 5.50
 ```
 
 ## Tables
-### Lister toutes les tables
+### Lister toutes les tables de l'établissement
 **Method:** `GET`  
 **URL:** `http://localhost:8000/api/v1/tables`  
 

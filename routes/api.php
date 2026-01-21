@@ -12,5 +12,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('products', ProductApiController::class);
     Route::apiResource('categories', CategoryApiController::class)->only(['index', 'show']);
     Route::apiResource('tables', TablesApiController::class);
-    Route::apiResource('orders', OrderApiController::class)->only(['index', 'show', 'store', 'destroy']);
+    Route::apiResource('orders', OrderApiController::class);
 });

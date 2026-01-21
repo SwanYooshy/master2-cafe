@@ -18,7 +18,7 @@ class OrderSeeder extends Seeder
         $products = Product::where('is_active', true)->get();
 
         if ($tables->isEmpty() || $products->isEmpty()) {
-            $this->command->warn('⚠️ Tables ou Products manquants. Seeder Order ignoré.');
+            $this->command->warn('WARN: Tables ou Products manquants. Seeder Order ignoré.');
             return;
         }
 
