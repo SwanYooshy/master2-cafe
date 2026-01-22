@@ -7,6 +7,7 @@ php artisan db:seed --class=TablesSeeder
 php artisan db:seed --class=CategorySeeder
 php artisan db:seed --class=OrderSeeder
 ```
+**Sinon pour tout exécuter en une commande:** `php artisan db:seed`
 
 ## Liste des commandes d'Api
 ## Produits
@@ -183,6 +184,19 @@ Body (raw - JSON):
       "quantity": 1
     }
   ]
+}
+```
+
+### Modifier une commande
+**Method:** `PUT`  
+**URL:** `http://localhost:8000/api/v1/orders/{id_order}`  
+**Headers:** 
+Content-Type: application/json  
+Accept: application/json  
+Body (raw - JSON):
+```
+{
+  "status": "ready"
 }
 ```
 
