@@ -1,7 +1,39 @@
 # master2-cafe
 
+## Installation
+
+### Prérequis
+
+- **Node.js** 18+
+- **npm**
+- **Expo CLI** (installé automatiquement)
+- **composer**
+
+### Étapes
+
+1. **Cloner le repository**
+```bash
+git clone https://github.com/SwanYooshy/master2-cafe.git
+cd master2-cafe-expo
+```
+
+2. **Installer les dépendances**
+```bash
+npm install
+composer install
+```
+
+3. **Lancer l'application**
+```bash
+php artisan serve
+```
+et dans un autre terminal :
+```
+npm run build
+```
+
 ## lancement des factories (fournir en données la base de données) :
-```zsh
+```bash
 php artisan db:seed --class=ProductSeeder
 php artisan db:seed --class=TablesSeeder
 php artisan db:seed --class=CategorySeeder

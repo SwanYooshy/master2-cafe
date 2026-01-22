@@ -42,17 +42,13 @@ export default function Dashboard() {
 
         const hourlyOrders: Record<number, number> = {};
         ordersData.forEach(order => {
-          console.log('Processing order created at:', order.createdAt);
           const hour = new Date(order.createdAt).getHours();
-          console.log('Order created at hour:', hour);
           hourlyOrders[hour] = (hourlyOrders[hour] || 0) + 1;
         });
-        console.log('Hourly Orders:', hourlyOrders);
         const hourlyDataArray: ChartData[] = Object.entries(hourlyOrders).map(([hour, count]) => ({
           label: `${hour}:00`,
           value: count
         }));
-        console.log('Hourly Data Array:', hourlyDataArray);
         setHourlyData(hourlyDataArray);
 
         const pendingOrders = ordersData.filter(order => order.status === 'pending').length;
@@ -124,13 +120,14 @@ export default function Dashboard() {
             title="Commandes du jour"
             value={stats?.ordersToday || 0}
             icon={ClipboardList}
-            trend={{ value: 12, isPositive: true }}
+            // trend={{ value: 12, isPositive: true }}
+            subtitle="Commandes servies et payées aujourd'hui"
           />
           <StatCard
             title="Revenu du jour"
             value={`${stats?.revenueToday.toFixed(2) || '0.00'}€`}
             icon={DollarSign}
-            trend={{ value: 8, isPositive: true }}
+            subtitle="Uniquement les commandes terminées"
           />
           <StatCard
             title="Tables actives"
