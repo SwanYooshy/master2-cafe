@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('tables', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->integer('capacity')->default(4);
+            $table->enum('status', ['libre', 'occuper'])->default('libre');
+            $table->integer('active_orders')->default(0);
             $table->timestamps();
         });
     }

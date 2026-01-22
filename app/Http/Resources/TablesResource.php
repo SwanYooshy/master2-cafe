@@ -15,10 +15,11 @@ class TablesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => (string) $this->id,
             'name' => $this->name,
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'capacity' => $this->capacity,
+            'status' => $this->status,
+            'activeOrders' => $this->active_orders,
         ];
     }
 }

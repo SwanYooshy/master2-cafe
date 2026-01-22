@@ -13,6 +13,7 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('products', ProductApiController::class);
     Route::apiResource('categories', CategoryApiController::class)->only(['index', 'show']);
     Route::apiResource('tables', TablesApiController::class);
+    Route::patch('tables/{table}/status', [TablesApiController::class, 'updateStatus']);
     Route::apiResource('orders', OrderApiController::class);
     Route::get('stripe-keys', [StripeApiController::class, 'getStripeKeys']);
 });

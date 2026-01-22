@@ -24,6 +24,9 @@ class TablesApiController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:1',
+            'status' => 'sometimes|in:libre,occuper',
+            'active_orders' => 'sometimes|integer|min:0',
         ]);
 
         $table = Tables::create($validated);
@@ -37,6 +40,9 @@ class TablesApiController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:1',
+            'status' => 'sometimes|in:libre,occuper',
+            'active_orders' => 'sometimes|integer|min:0',
         ]);
 
         $table->update($validated);
@@ -51,5 +57,25 @@ class TablesApiController extends Controller
         return response()->json([
             'message' => 'Table deleted successfully'
         ], 200);
+    }
+
+    public function updateStatus(Request $request, Tables $table)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:libre,occuper',
+        ]);
+
+        if ($validated['status'] === 'libre') {
+            $table->update([
+                'status' => 'libre',
+                'active_orders' => 0,
+            ]);
+        } else {
+            $table->update([
+                'status' => $validated['status'],
+            ]);
+        }
+
+        return new TablesResource($table);
     }
 }

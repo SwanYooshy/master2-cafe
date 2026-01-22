@@ -11,5 +11,13 @@ class Tables extends Model
 
     protected $fillable = [
         'name',
+        'capacity',
+        'status',
+        'active_orders',
+    ];
+
+    protected $casts = [
+        'capacity' => 'integer',
+        'active_orders' => 'integer',
     ];
 }

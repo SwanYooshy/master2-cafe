@@ -11,8 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { tablesApi } from '@/services/api';
-import { Table as TableType } from '@/types';
+import { tablesApi, Table as TableType } from '@/services/api/tablesApi';
 
 export default function Tables() {
   const { toast } = useToast();
@@ -22,8 +21,8 @@ export default function Tables() {
     open: boolean;
     tableId: string;
     tableName: string;
-    action: 'free' | 'occupied';
-  }>({ open: false, tableId: '', tableName: '', action: 'free' });
+    action: 'libre' | 'occuper';
+  }>({ open: false, tableId: '', tableName: '', action: 'libre' });
 
   useEffect(() => {
     fetchTables();
@@ -46,14 +45,14 @@ export default function Tables() {
   };
 
   const handleStatusChange = (table: TableType) => {
-    const newStatus = table.status === 'free' ? 'occupied' : 'free';
+    const newStatus = table.status === 'libre' ? 'occuper' : 'libre';
 
-    if (newStatus === 'free' && table.activeOrders > 0) {
+    if (newStatus === 'libre' && table.activeOrders > 0) {
       setConfirmDialog({
         open: true,
         tableId: table.id,
         tableName: table.name,
-        action: 'free',
+        action: 'libre',
       });
       return;
     }
@@ -61,13 +60,13 @@ export default function Tables() {
     updateTableStatus(table.id, newStatus);
   };
 
-  const updateTableStatus = async (tableId: string, status: 'free' | 'occupied') => {
+  const updateTableStatus = async (tableId: string, status: 'libre' | 'occuper') => {
     try {
       const updated = await tablesApi.updateTableStatus(tableId, status);
       setTables((prev) =>
         prev.map((t) => (t.id === tableId ? updated : t))
       );
-      const statusText = status === 'free' ? 'libre' : 'occupée';
+      const statusText = status === 'libre' ? 'libre' : 'occupée';
       toast({
         title: 'Table mise à jour',
         description: `La table est maintenant ${statusText}`,
@@ -81,8 +80,8 @@ export default function Tables() {
     }
   };
 
-  const occupiedCount = tables.filter((t) => t.status === 'occupied').length;
-  const freeCount = tables.filter((t) => t.status === 'free').length;
+  const occupiedCount = tables.filter((t) => t.status === 'occuper').length;
+  const freeCount = tables.filter((t) => t.status === 'libre').length;
 
   return (
     <AppLayout title="Tables">
@@ -150,7 +149,7 @@ export default function Tables() {
                 key={table.id}
                 className={cn(
                   'transition-all hover:shadow-md cursor-pointer animate-fade-in',
-                  table.status === 'free' ? 'table-free' : 'table-occupied'
+                  table.status === 'libre' ? 'table-free' : 'table-occupied'
                 )}
                 onClick={() => handleStatusChange(table)}
               >
@@ -163,18 +162,18 @@ export default function Tables() {
                       </p>
                     </div>
                     <Badge
-                      variant={table.status === 'free' ? 'outline' : 'destructive'}
+                      variant={table.status === 'libre' ? 'outline' : 'destructive'}
                       className={cn(
-                        table.status === 'free'
+                        table.status === 'libre'
                           ? 'border-status-free text-status-free'
                           : 'bg-status-occupied'
                       )}
                     >
-                      {table.status === 'free' ? 'Libre' : 'Occupée'}
+                      {table.status === 'libre' ? 'Libre' : 'Occupée'}
                     </Badge>
                   </div>
 
-                  {table.status === 'occupied' && (
+                  {table.status === 'occuper' && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <ClipboardList className="h-4 w-4" />
                       {table.activeOrders} commande{table.activeOrders !== 1 ? 's' : ''} active{table.activeOrders !== 1 ? 's' : ''}
@@ -182,7 +181,7 @@ export default function Tables() {
                   )}
 
                   <Button
-                    variant={table.status === 'free' ? 'default' : 'outline'}
+                    variant={table.status === 'libre' ? 'default' : 'outline'}
                     size="sm"
                     className="w-full mt-4"
                     onClick={(e) => {
@@ -190,7 +189,7 @@ export default function Tables() {
                       handleStatusChange(table);
                     }}
                   >
-                    {table.status === 'free' ? 'Marquer comme occupée' : 'Marquer comme libre'}
+                    {table.status === 'libre' ? 'Marquer comme occupée' : 'Marquer comme libre'}
                   </Button>
                 </CardContent>
               </Card>
@@ -219,7 +218,7 @@ export default function Tables() {
         description={`${confirmDialog.tableName} a des commandes actives. Êtes-vous sûr de vouloir la marquer comme libre ? Cela peut affecter le suivi des commandes.`}
         confirmLabel="Marquer comme libre"
         cancelLabel="Garder occupée"
-        onConfirm={() => updateTableStatus(confirmDialog.tableId, 'free')}
+        onConfirm={() => updateTableStatus(confirmDialog.tableId, 'libre')}
       />
     </AppLayout>
   );

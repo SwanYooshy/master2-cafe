@@ -135,6 +135,9 @@ Body (raw - JSON):
 **Method:** `DELETE`  
 **URL:** `http://localhost:8000/api/v1/tables/1`
 
+### Modifier l'état d'une table  
+**Method** 
+
 ## Orders (les commandes client)
 ### Lister toutes les commandes
 **Method:** `GET`  
