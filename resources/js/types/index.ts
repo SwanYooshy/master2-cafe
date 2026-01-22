@@ -1,7 +1,7 @@
 // Core types for Smart Café application
 
 export type OrderStatus = 'pending' | 'preparing' | 'ready' | 'served' | 'cancelled';
-export type TableStatus = 'free' | 'occupied';
+export type TableStatus = 'libre' | 'occuper';
 
 export interface Product {
   id: string;

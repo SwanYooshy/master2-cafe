@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
 import { Head } from '@inertiajs/react';
 import { ClipboardList, DollarSign, Users, Clock, TrendingUp, Utensils } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+
 import { AppLayout } from '@/components/layout/AppLayout';
-import { StatCard } from '@/components/shared/StatCard';
 import { LoadingState } from '@/components/shared/LoadingState';
+import { StatCard } from '@/components/shared/StatCard';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { dashboardApi, ordersApi } from '@/services/api';
+import { tablesApi } from '@/services/api/tablesApi';
 import { DashboardStats, Order, ChartData } from '@/types';
-import { StatusBadge } from '@/components/shared/StatusBadge';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+
 
 const CHART_COLORS = ['hsl(35, 85%, 55%)', 'hsl(30, 45%, 35%)', 'hsl(142, 71%, 45%)', 'hsl(217, 91%, 60%)', 'hsl(0, 72%, 51%)'];
 
@@ -18,21 +21,29 @@ export default function Dashboard() {
   const [hourlyData, setHourlyData] = useState<ChartData[]>([]);
   const [categoryData, setCategoryData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const countActiveTables = (tablesData: Array<{ id: string; status: string }>) => {
+    const activeTables = tablesData.filter(table => table.status === 'occuper').length;
+    const totalTables = tablesData.length;
+    setStats(prev => prev ? { ...prev, activeTables, totalTables } : null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsData, ordersData, hourly, category] = await Promise.all([
+        const [statsData, ordersData, hourly, category, tablesData] = await Promise.all([
           dashboardApi.getStats(),
           ordersApi.getOrders(),
           dashboardApi.getHourlyOrders(),
           dashboardApi.getRevenueByCategory(),
+          tablesApi.getTables(),
         ]);
 
         setStats(statsData);
         setRecentOrders(ordersData.slice(0, 5));
         setHourlyData(hourly);
         setCategoryData(category);
+        countActiveTables(tablesData);
+        console.log('Stats Data:', statsData);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       } finally {
@@ -55,7 +66,7 @@ export default function Dashboard() {
   return (
     <AppLayout title="Tableau de bord">
       <Head title="Tableau de bord" />
-      
+
       <div className="space-y-6">
         {/* Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
