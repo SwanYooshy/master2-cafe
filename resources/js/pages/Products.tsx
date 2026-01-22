@@ -1,41 +1,22 @@
-import { useEffect, useState } from 'react';
 import { Head } from '@inertiajs/react';
 import { Search, Filter, X, Package, Edit2, Check, XIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { AppLayout } from '@/components/layout/AppLayout';
-import { LoadingState } from '@/components/shared/LoadingState';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
+import { LoadingState } from '@/components/shared/LoadingState';
 import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { productsApi } from '@/services/api';
-import { Product } from '@/types';
-import { productCategories } from '@/services/mockData';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
+import { productsApi, Product } from '@/services/api/productsApi';
+import { productCategories } from '@/services/mockData';
 
 export default function Products() {
   const { toast } = useToast();
@@ -44,7 +25,7 @@ export default function Products() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
-  
+
   // Edit dialog state
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -68,7 +49,7 @@ export default function Products() {
     } catch (error) {
       toast({
         title: 'Erreur',
-        description: 'Échec du chargement des produits',
+        description: 'Échec du chargement des produits : ' + (error instanceof Error ? ` ${error.message}` : ''),
         variant: 'destructive',
       });
     } finally {
@@ -110,7 +91,7 @@ export default function Products() {
     } catch (error) {
       toast({
         title: 'Erreur',
-        description: 'Échec de la mise à jour du produit',
+        description: 'Échec de la mise à jour du produit : ' + (error instanceof Error ? ` ${error.message}` : ''),
         variant: 'destructive',
       });
     }
@@ -164,7 +145,7 @@ export default function Products() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to update product',
+        description: 'Failed to update product : ' + (error instanceof Error ? ` ${error.message}` : ''),
         variant: 'destructive',
       });
     } finally {
@@ -272,7 +253,7 @@ export default function Products() {
                         <Badge variant="outline">{product.category}</Badge>
                       </TableCell>
                       <TableCell className="font-medium">
-                        ${product.price.toFixed(2)}
+                        {product.price.toFixed(2)} €
                       </TableCell>
                       <TableCell>
                         <Badge variant={getStockBadgeVariant(product.stock)}>

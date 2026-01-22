@@ -17,13 +17,17 @@ class Product extends Model
         'description',
         'image',
         'price',
+        'stock',
         'category_id',
         'is_active',
+        'enabled',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'stock' => 'integer',
         'is_active' => 'boolean',
+        'enabled' => 'boolean',
     ];
 
     public function category(): BelongsTo

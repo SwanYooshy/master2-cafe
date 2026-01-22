@@ -12,8 +12,7 @@ class ProductApiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'variants'])
-            ->where('is_active', true);
+        $query = Product::with(['category', 'variants']);
 
         if ($request->has('category')) {
             $query->whereHas('category', function ($q) use ($request) {
@@ -71,7 +70,9 @@ class ProductApiController extends Controller
             'description' => 'sometimes|required|string',
             'image' => 'nullable|image|max:2048',
             'price' => 'sometimes|required|numeric|min:0',
+            'stock' => 'sometimes|required|integer|min:0',
             'category_id' => 'sometimes|required|exists:categories,id',
+            'enabled' => 'sometimes|boolean',
             'variants' => 'nullable|array',
             'variants.*.id' => 'nullable|exists:product_variants,id',
             'variants.*.name' => 'required|string|max:255',

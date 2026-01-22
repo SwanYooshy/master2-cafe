@@ -34,7 +34,9 @@ Body (raw - JSON):
   "name": "Cappuccino Premium",
   "description": "Notre meilleur cappuccino",
   "price": 5.00,
+  "Stock": 50,
   "category_id": 1,
+  "is_active": true,
   "variants": [
     {
       "id": 1,

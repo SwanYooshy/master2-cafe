@@ -160,46 +160,6 @@ export const productsApi = {
   },
 };
 
-// ============== TABLES API ==============
-
-export const tablesApi = {
-  /**
-   * Get all tables
-   * TODO: Connect to actual tables endpoint
-   */
-  getTables: async (): Promise<Table[]> => {
-    await delay(400);
-    return mockTables;
-  },
-
-  /**
-   * Get single table by ID
-   * TODO: Connect to actual table detail endpoint
-   */
-  getTable: async (id: string): Promise<Table | null> => {
-    await delay(200);
-    return mockTables.find(table => table.id === id) || null;
-  },
-
-  /**
-   * Update table status
-   * TODO: Connect to actual table update endpoint
-   */
-  updateTableStatus: async (id: string, status: 'free' | 'occupied'): Promise<Table> => {
-    await delay(300);
-
-    const table = mockTables.find(t => t.id === id);
-    if (!table) throw new Error('Table not found');
-
-    table.status = status;
-    if (status === 'free') {
-      table.activeOrders = 0;
-    }
-
-    return table;
-  },
-};
-
 // ============== DASHBOARD API ==============
 
 export const dashboardApi = {

@@ -15,7 +15,10 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'image' => $this->image ? url($this->image) : null,
             'price' => (float) $this->price,
+            'stock' => (int) $this->stock,
+            'category' => $this->category->name,
             'categoryId' => $this->category->slug,
+            'enabled' => $this->enabled,
             'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
         ];
     }
