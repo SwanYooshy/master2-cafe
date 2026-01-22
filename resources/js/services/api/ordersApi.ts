@@ -68,7 +68,7 @@ export const ordersApi = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, updated_at: new Date().toISOString() }),
     });
 
     if (!response.ok) {

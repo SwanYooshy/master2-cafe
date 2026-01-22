@@ -21,6 +21,7 @@ class OrderResource extends JsonResource
             'tableId' => (string) $this->table->id,
             'items' => OrderProductResource::collection($this->whenLoaded('products')),
             'createdAt' => $this->created_at->toDateTimeString(),
+            'updatedAt' => $this->updated_at->toDateTimeString(),
             'status' => $this->status,
             'notes' => $this->notes,
         ];

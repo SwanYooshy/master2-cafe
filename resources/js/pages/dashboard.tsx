@@ -8,7 +8,9 @@ import { LoadingState } from '@/components/shared/LoadingState';
 import { StatCard } from '@/components/shared/StatCard';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { dashboardApi, ordersApi } from '@/services/api';
+import { dashboardApi } from '@/services/api';
+import { ordersApi } from '@/services/api/ordersApi';
+import { productsApi } from '@/services/api/productsApi';
 import { tablesApi } from '@/services/api/tablesApi';
 import { DashboardStats, Order, ChartData } from '@/types';
 
@@ -30,20 +32,68 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsData, ordersData, hourly, category, tablesData] = await Promise.all([
+        const [statsData, ordersData, tablesData] = await Promise.all([
           dashboardApi.getStats(),
           ordersApi.getOrders(),
-          dashboardApi.getHourlyOrders(),
-          dashboardApi.getRevenueByCategory(),
           tablesApi.getTables(),
         ]);
 
         setStats(statsData);
-        setRecentOrders(ordersData.slice(0, 5));
-        setHourlyData(hourly);
-        setCategoryData(category);
+
+        const hourlyOrders: Record<number, number> = {};
+        ordersData.forEach(order => {
+          console.log('Processing order created at:', order.createdAt);
+          const hour = new Date(order.createdAt).getHours();
+          console.log('Order created at hour:', hour);
+          hourlyOrders[hour] = (hourlyOrders[hour] || 0) + 1;
+        });
+        console.log('Hourly Orders:', hourlyOrders);
+        const hourlyDataArray: ChartData[] = Object.entries(hourlyOrders).map(([hour, count]) => ({
+          label: `${hour}:00`,
+          value: count
+        }));
+        console.log('Hourly Data Array:', hourlyDataArray);
+        setHourlyData(hourlyDataArray);
+
+        const pendingOrders = ordersData.filter(order => order.status === 'pending').length;
+        setStats(prev => prev ? { ...prev, pendingOrders } : null);
+
+        const ordersToday = ordersData.filter(order => {
+          const orderDate = new Date(order.createdAt);
+          const today = new Date();
+          return orderDate.toDateString() === today.toDateString() && order.status === 'served';
+        }).length;
+        setStats(prev => prev ? { ...prev, ordersToday } : null);
+
+        const revenueToday = ordersData.reduce((total, order) => {
+          const orderDate = new Date(order.createdAt);
+          const today = new Date();
+          if (orderDate.toDateString() === today.toDateString() && order.status === 'served') {
+            return total + order.total;
+          }
+          return total;
+        }, 0);
+        setStats(prev => prev ? { ...prev, revenueToday } : null);
+
+        const ordersCompleted = ordersData.filter(order => order.status === 'served');
+        const categoryRevenueMap: Record<string, number> = {};
+        for (const order of ordersCompleted) {
+            for (const item of order.items) {
+                const product = await productsApi.getProducts({ id: item.id });
+                const category = product ? product.category : 'Inconnu';
+                if (!categoryRevenueMap[category]) {
+                    categoryRevenueMap[category] = 0;
+                }
+                    categoryRevenueMap[category] += item.unitPrice * item.quantity;
+            }
+        }
+        const categoryDataArray: ChartData[] = Object.entries(categoryRevenueMap).map(([label, value]) => ({ label, value }));
+        setCategoryData(categoryDataArray);
+
+        const sortedOrders = ordersData.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        setRecentOrders(sortedOrders.slice(0, 5));
+
         countActiveTables(tablesData);
-        console.log('Stats Data:', statsData);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       } finally {
@@ -161,7 +211,7 @@ export default function Dashboard() {
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px',
                       }}
-                      formatter={(value) => [`$${value}`, 'Revenu']}
+                      formatter={(value) => [`${value} €`, 'Revenu']}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -184,10 +234,11 @@ export default function Dashboard() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="font-medium text-sm">{order.id}</div>
-                    <div className="text-sm text-muted-foreground">{order.tableName}</div>
+                    <div className="text-sm text-muted-foreground">Table : <b>{order.tableName}</b></div>
                     <div className="text-sm text-muted-foreground">
-                      {order.items.length} article{order.items.length > 1 ? 's' : ''}
+                      <b>{order.items.length}</b> article{order.items.length > 1 ? 's' : ''}
                     </div>
+                    <div className="text-sm text-muted-foreground">{new Date(order.updatedAt).toLocaleString()}</div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="font-medium">${order.total.toFixed(2)}</span>

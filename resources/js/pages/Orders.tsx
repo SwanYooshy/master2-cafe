@@ -243,7 +243,7 @@ export default function Orders() {
                           {order.items.length} article{order.items.length > 1 ? 's' : ''}
                         </TableCell>
                         <TableCell className="font-medium">
-                          ${order.total.toFixed(2)}
+                          {order.total.toFixed(2)} €
                         </TableCell>
                         <TableCell>
                           <StatusBadge status={order.status} />
@@ -310,11 +310,11 @@ export default function Orders() {
                     <div>
                       <p className="font-medium">{productNames[item.id] ?? 'Chargement...'}</p>
                       <p className="text-sm text-muted-foreground">
-                        Qté : {item.quantity} × ${item.unitPrice.toFixed(2)}
+                        Qté : {item.quantity} × {item.unitPrice.toFixed(2)} €
                       </p>
                     </div>
                     <p className="font-medium">
-                      ${(item.quantity * item.unitPrice).toFixed(2)}
+                      {(item.quantity * item.unitPrice).toFixed(2)} €
                     </p>
                   </div>
                 ))}
@@ -329,7 +329,7 @@ export default function Orders() {
 
               <div className="flex justify-between items-center pt-2 border-t">
                 <span className="font-medium">Total</span>
-                <span className="text-xl font-bold">${selectedOrder.total.toFixed(2)}</span>
+                <span className="text-xl font-bold">{selectedOrder.total.toFixed(2)} €</span>
               </div>
 
               <div className="text-xs text-muted-foreground">
