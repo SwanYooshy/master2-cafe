@@ -136,7 +136,17 @@ Body (raw - JSON):
 **URL:** `http://localhost:8000/api/v1/tables/1`
 
 ### Modifier l'état d'une table  
-**Method** 
+**Method** `PATCH`  
+**URL:** `http://localhost:8000/api/v1/tables/{id}/status`  
+**Headers:**  
+Content-Type: application/json
+Accept: application/json
+Body (raw - JSON):
+```
+{
+  "status" : "libre"
+}
+```
 
 ## Orders (les commandes client)
 ### Lister toutes les commandes
