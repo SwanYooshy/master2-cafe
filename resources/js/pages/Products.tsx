@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import { Search, Filter, X, Package, Edit2, Check, XIcon } from 'lucide-react';
-import { AppHeader } from '@/components/layout/AppHeader';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -66,8 +67,8 @@ export default function Products() {
       setProducts(data);
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to load products',
+        title: 'Erreur',
+        description: 'Échec du chargement des produits',
         variant: 'destructive',
       });
     } finally {
@@ -103,13 +104,13 @@ export default function Products() {
         prev.map((p) => (p.id === product.id ? updated : p))
       );
       toast({
-        title: updated.enabled ? 'Product enabled' : 'Product disabled',
-        description: `${product.name} is now ${updated.enabled ? 'available' : 'unavailable'}`,
+        title: updated.enabled ? 'Produit activé' : 'Produit désactivé',
+        description: `${product.name} est maintenant ${updated.enabled ? 'disponible' : 'indisponible'}`,
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to update product',
+        title: 'Erreur',
+        description: 'Échec de la mise à jour du produit',
         variant: 'destructive',
       });
     }
@@ -130,8 +131,8 @@ export default function Products() {
 
     if (isNaN(price) || price < 0) {
       toast({
-        title: 'Invalid price',
-        description: 'Please enter a valid price',
+        title: 'Prix invalide',
+        description: 'Veuillez entrer un prix valide',
         variant: 'destructive',
       });
       return;
@@ -139,8 +140,8 @@ export default function Products() {
 
     if (isNaN(stock) || stock < 0) {
       toast({
-        title: 'Invalid stock',
-        description: 'Please enter a valid stock quantity',
+        title: 'Stock invalide',
+        description: 'Veuillez entrer une quantité de stock valide',
         variant: 'destructive',
       });
       return;
@@ -157,8 +158,8 @@ export default function Products() {
       );
       setIsEditOpen(false);
       toast({
-        title: 'Product updated',
-        description: `${editProduct.name} has been updated`,
+        title: 'Produit mis à jour',
+        description: `${editProduct.name} a été mis à jour`,
       });
     } catch (error) {
       toast({
@@ -178,8 +179,8 @@ export default function Products() {
   };
 
   return (
-    <div className="min-h-screen">
-      <AppHeader title="Products" />
+    <AppLayout title="Produits">
+      <Head title="Produits" />
 
       <div className="p-6 space-y-4">
         {/* Filters */}
@@ -190,7 +191,7 @@ export default function Products() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search products..."
+                  placeholder="Rechercher des produits..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9"
@@ -246,11 +247,11 @@ export default function Products() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
+                    <TableHead>Produit</TableHead>
+                    <TableHead>Catégorie</TableHead>
+                    <TableHead>Prix</TableHead>
                     <TableHead>Stock</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Statut</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -275,7 +276,7 @@ export default function Products() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={getStockBadgeVariant(product.stock)}>
-                          {product.stock === 0 ? 'Out of stock' : `${product.stock} units`}
+                          {product.stock === 0 ? 'Rupture de stock' : `${product.stock} unités`}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -285,7 +286,7 @@ export default function Products() {
                             onCheckedChange={() => handleToggleEnabled(product)}
                           />
                           <span className={product.enabled ? 'text-foreground' : 'text-muted-foreground'}>
-                            {product.enabled ? 'Active' : 'Disabled'}
+                            {product.enabled ? 'Actif' : 'Désactivé'}
                           </span>
                         </div>
                       </TableCell>
@@ -296,7 +297,7 @@ export default function Products() {
                           onClick={() => openEditDialog(product)}
                         >
                           <Edit2 className="h-4 w-4 mr-1" />
-                          Edit
+                          Modifier
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -312,18 +313,18 @@ export default function Products() {
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Product</DialogTitle>
+            <DialogTitle>Modifier le produit</DialogTitle>
           </DialogHeader>
           {editProduct && (
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Product Name</Label>
+                <Label>Nom du produit</Label>
                 <p className="text-sm text-muted-foreground">{editProduct.name}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price ($)</Label>
+                  <Label htmlFor="price">Prix ($)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -349,15 +350,15 @@ export default function Products() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditOpen(false)} disabled={isSaving}>
               <XIcon className="h-4 w-4 mr-1" />
-              Cancel
+              Annuler
             </Button>
             <Button onClick={handleSaveEdit} disabled={isSaving}>
               <Check className="h-4 w-4 mr-1" />
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isSaving ? 'Enregistrement...' : 'Enregistrer'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   );
 }

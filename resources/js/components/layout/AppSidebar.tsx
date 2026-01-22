@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, router, usePage } from '@inertiajs/react';
 import { 
   LayoutDashboard, 
   ClipboardList, 
@@ -18,19 +18,17 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { title: 'Orders', href: '/orders', icon: ClipboardList },
-  { title: 'Products', href: '/products', icon: UtensilsCrossed },
+  { title: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
+  { title: 'Commandes', href: '/orders', icon: ClipboardList },
+  { title: 'Produits', href: '/products', icon: UtensilsCrossed },
   { title: 'Tables', href: '/tables', icon: Grid3X3 },
 ];
 
 export function AppSidebar() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { url } = usePage();
 
   const handleLogout = () => {
-    // TODO: Call logout API and clear session
-    navigate('/login');
+    router.post('/logout');
   };
 
   return (
@@ -42,7 +40,7 @@ export function AppSidebar() {
         </div>
         <div>
           <h1 className="text-lg font-semibold text-sidebar-foreground">Smart Café</h1>
-          <p className="text-xs text-sidebar-foreground/60">Management System</p>
+          <p className="text-xs text-sidebar-foreground/60">Système de gestion</p>
         </div>
       </div>
 
@@ -51,23 +49,22 @@ export function AppSidebar() {
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.href;
+          const isActive = url === item.href || url.startsWith(item.href + '/');
           const Icon = item.icon;
 
           return (
-            <Button
+            <Link
               key={item.href}
-              variant="ghost"
+              href={item.href}
               className={cn(
-                'w-full justify-start gap-3 px-3 py-2.5 text-sm font-medium transition-colors',
+                'flex w-full items-center justify-start gap-3 px-3 py-2.5 text-sm font-medium transition-colors rounded-md',
                 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                 isActive && 'bg-sidebar-accent text-sidebar-primary font-semibold'
               )}
-              onClick={() => navigate(item.href)}
             >
               <Icon className={cn('h-5 w-5', isActive && 'text-sidebar-primary')} />
               {item.title}
-            </Button>
+            </Link>
           );
         })}
       </nav>
@@ -81,7 +78,7 @@ export function AppSidebar() {
           onClick={handleLogout}
         >
           <LogOut className="h-5 w-5" />
-          Sign Out
+          Déconnexion
         </Button>
       </div>
     </aside>

@@ -28,7 +28,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, className 
               'mt-2 text-sm font-medium',
               trend.isPositive ? 'text-status-ready' : 'text-destructive'
             )}>
-              {trend.isPositive ? '+' : ''}{trend.value}% from yesterday
+              {trend.isPositive ? '+' : ''}{trend.value}% par rapport à hier
             </p>
           )}
         </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import { Users, ClipboardList, Grid3X3 } from 'lucide-react';
-import { AppHeader } from '@/components/layout/AppHeader';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
@@ -34,8 +35,8 @@ export default function Tables() {
       setTables(data);
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to load tables',
+        title: 'Erreur',
+        description: 'Échec du chargement des tables',
         variant: 'destructive',
       });
     } finally {
@@ -65,14 +66,15 @@ export default function Tables() {
       setTables((prev) =>
         prev.map((t) => (t.id === tableId ? updated : t))
       );
+      const statusText = status === 'free' ? 'libre' : 'occupée';
       toast({
-        title: 'Table updated',
-        description: `Table is now ${status}`,
+        title: 'Table mise à jour',
+        description: `La table est maintenant ${statusText}`,
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to update table status',
+        title: 'Erreur',
+        description: 'Échec de la mise à jour du statut de la table',
         variant: 'destructive',
       });
     }
@@ -82,8 +84,8 @@ export default function Tables() {
   const freeCount = tables.filter((t) => t.status === 'free').length;
 
   return (
-    <div className="min-h-screen">
-      <AppHeader title="Tables" />
+    <AppLayout title="Tables">
+      <Head title="Tables" />
 
       <div className="p-6 space-y-6">
         {/* Summary Cards */}
@@ -92,7 +94,7 @@ export default function Tables() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Tables</p>
+                  <p className="text-sm text-muted-foreground">Total des tables</p>
                   <p className="text-2xl font-bold">{tables.length}</p>
                 </div>
                 <div className="h-10 w-10 rounded-lg bg-secondary flex items-center justify-center">
@@ -106,7 +108,7 @@ export default function Tables() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Occupied</p>
+                  <p className="text-sm text-muted-foreground">Occupées</p>
                   <p className="text-2xl font-bold text-status-occupied">{occupiedCount}</p>
                 </div>
                 <div className="h-10 w-10 rounded-lg bg-status-occupied/10 flex items-center justify-center">
@@ -120,7 +122,7 @@ export default function Tables() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Available</p>
+                  <p className="text-sm text-muted-foreground">Disponibles</p>
                   <p className="text-2xl font-bold text-status-free">{freeCount}</p>
                 </div>
                 <div className="h-10 w-10 rounded-lg bg-status-free/10 flex items-center justify-center">
@@ -133,12 +135,12 @@ export default function Tables() {
 
         {/* Tables Grid */}
         {isLoading ? (
-          <LoadingState message="Loading tables..." />
+          <LoadingState message="Chargement des tables..." />
         ) : tables.length === 0 ? (
           <EmptyState
             icon={Grid3X3}
-            title="No tables configured"
-            description="Tables will appear here once added to the system"
+            title="Aucune table configurée"
+            description="Les tables apparaîtront ici une fois ajoutées au système"
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -156,7 +158,7 @@ export default function Tables() {
                     <div>
                       <h3 className="font-semibold text-lg">{table.name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Capacity: {table.capacity}
+                        Capacité : {table.capacity}
                       </p>
                     </div>
                     <Badge
@@ -167,14 +169,14 @@ export default function Tables() {
                           : 'bg-status-occupied'
                       )}
                     >
-                      {table.status === 'free' ? 'Free' : 'Occupied'}
+                      {table.status === 'free' ? 'Libre' : 'Occupée'}
                     </Badge>
                   </div>
 
                   {table.status === 'occupied' && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <ClipboardList className="h-4 w-4" />
-                      {table.activeOrders} active order{table.activeOrders !== 1 ? 's' : ''}
+                      {table.activeOrders} commande{table.activeOrders !== 1 ? 's' : ''} active{table.activeOrders !== 1 ? 's' : ''}
                     </div>
                   )}
 
@@ -187,7 +189,7 @@ export default function Tables() {
                       handleStatusChange(table);
                     }}
                   >
-                    {table.status === 'free' ? 'Mark as Occupied' : 'Mark as Free'}
+                    {table.status === 'free' ? 'Marquer comme occupée' : 'Marquer comme libre'}
                   </Button>
                 </CardContent>
               </Card>
@@ -199,11 +201,11 @@ export default function Tables() {
         <div className="flex items-center gap-6 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-status-free" />
-            <span>Available</span>
+            <span>Disponible</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-status-occupied" />
-            <span>Occupied</span>
+            <span>Occupée</span>
           </div>
         </div>
       </div>
@@ -212,12 +214,12 @@ export default function Tables() {
       <ConfirmDialog
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
-        title="Mark Table as Free"
-        description={`${confirmDialog.tableName} has active orders. Are you sure you want to mark it as free? This may affect order tracking.`}
-        confirmLabel="Mark as Free"
-        cancelLabel="Keep Occupied"
+        title="Marquer la table comme libre"
+        description={`${confirmDialog.tableName} a des commandes actives. Êtes-vous sûr de vouloir la marquer comme libre ? Cela peut affecter le suivi des commandes.`}
+        confirmLabel="Marquer comme libre"
+        cancelLabel="Garder occupée"
         onConfirm={() => updateTableStatus(confirmDialog.tableId, 'free')}
       />
-    </div>
+    </AppLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import { ClipboardList, DollarSign, Users, Clock, TrendingUp, Utensils } from 'lucide-react';
-import { AppHeader } from '@/components/layout/AppHeader';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { StatCard } from '@/components/shared/StatCard';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,44 +45,42 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
-        <AppHeader title="Dashboard" />
-        <div className="p-6">
-          <LoadingState message="Loading dashboard..." />
-        </div>
-      </div>
+      <AppLayout title="Tableau de bord">
+        <Head title="Tableau de bord" />
+        <LoadingState message="Chargement du tableau de bord..." />
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <AppHeader title="Dashboard" />
+    <AppLayout title="Tableau de bord">
+      <Head title="Tableau de bord" />
       
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         {/* Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            title="Orders Today"
+            title="Commandes du jour"
             value={stats?.ordersToday || 0}
             icon={ClipboardList}
             trend={{ value: 12, isPositive: true }}
           />
           <StatCard
-            title="Revenue Today"
-            value={`$${stats?.revenueToday.toFixed(2) || '0.00'}`}
+            title="Revenu du jour"
+            value={`${stats?.revenueToday.toFixed(2) || '0.00'}€`}
             icon={DollarSign}
             trend={{ value: 8, isPositive: true }}
           />
           <StatCard
-            title="Active Tables"
+            title="Tables actives"
             value={`${stats?.activeTables || 0} / ${stats?.totalTables || 0}`}
-            subtitle="Tables occupied"
+            subtitle="Tables occupées"
             icon={Users}
           />
           <StatCard
-            title="Pending Orders"
+            title="Commandes en attente"
             value={stats?.pendingOrders || 0}
-            subtitle="Waiting to be prepared"
+            subtitle="En attente de préparation"
             icon={Clock}
           />
         </div>
@@ -93,7 +92,7 @@ export default function Dashboard() {
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base font-medium">
                 <TrendingUp className="inline-block mr-2 h-4 w-4" />
-                Orders by Hour
+                Commandes par heure
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -122,7 +121,7 @@ export default function Dashboard() {
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-base font-medium">
                 <Utensils className="inline-block mr-2 h-4 w-4" />
-                Revenue by Category
+                Revenus par catégorie
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -151,7 +150,7 @@ export default function Dashboard() {
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px',
                       }}
-                      formatter={(value) => [`$${value}`, 'Revenue']}
+                      formatter={(value) => [`$${value}`, 'Revenu']}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -163,7 +162,7 @@ export default function Dashboard() {
         {/* Recent Orders */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-medium">Recent Orders</CardTitle>
+            <CardTitle className="text-base font-medium">Commandes récentes</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -176,7 +175,7 @@ export default function Dashboard() {
                     <div className="font-medium text-sm">{order.id}</div>
                     <div className="text-sm text-muted-foreground">{order.tableName}</div>
                     <div className="text-sm text-muted-foreground">
-                      {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                      {order.items.length} article{order.items.length > 1 ? 's' : ''}
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
@@ -189,6 +188,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </AppLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import { Filter, Search, X, Eye } from 'lucide-react';
-import { AppHeader } from '@/components/layout/AppHeader';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -65,8 +66,8 @@ export default function Orders() {
       setOrders(data);
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to load orders',
+        title: 'Erreur',
+        description: 'Échec du chargement des commandes',
         variant: 'destructive',
       });
     } finally {
@@ -112,14 +113,15 @@ export default function Orders() {
           order.id === orderId ? { ...order, status: newStatus } : order
         )
       );
+      const statusText = newStatus === 'pending' ? 'en attente' : newStatus === 'preparing' ? 'en préparation' : newStatus === 'ready' ? 'prête' : newStatus === 'served' ? 'servie' : 'annulée';
       toast({
-        title: 'Status updated',
-        description: `Order ${orderId} is now ${newStatus}`,
+        title: 'Statut mis à jour',
+        description: `La commande ${orderId} est maintenant ${statusText}`,
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to update order status',
+        title: 'Erreur',
+        description: 'Échec de la mise à jour du statut',
         variant: 'destructive',
       });
     }
@@ -142,8 +144,8 @@ export default function Orders() {
   };
 
   return (
-    <div className="min-h-screen">
-      <AppHeader title="Orders" />
+    <AppLayout title="Commandes">
+      <Head title="Commandes" />
 
       <div className="p-6 space-y-4">
         {/* Filters */}
@@ -154,7 +156,7 @@ export default function Orders() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search by order ID or table..."
+                  placeholder="Rechercher par ID de commande ou table..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9"
@@ -176,12 +178,12 @@ export default function Orders() {
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-40">
-                    <SelectValue placeholder="All statuses" />
+                    <SelectValue placeholder="Tous les statuts" />
                   </SelectTrigger>
                   <SelectContent>
                     {orderStatuses.map((status) => (
                       <SelectItem key={status} value={status}>
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                        {status === 'pending' ? 'En attente' : status === 'preparing' ? 'En préparation' : status === 'ready' ? 'Prête' : status === 'served' ? 'Servie' : status === 'cancelled' ? 'Annulée' : status === 'all' ? 'Tous' : status}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -195,27 +197,27 @@ export default function Orders() {
         <Card>
           <CardContent className="p-0">
             {isLoading ? (
-              <LoadingState message="Loading orders..." />
+              <LoadingState message="Chargement des commandes..." />
             ) : filteredOrders.length === 0 ? (
               <EmptyState
                 icon={Filter}
-                title="No orders found"
+                title="Aucune commande trouvée"
                 description={
                   searchQuery || statusFilter !== 'all'
-                    ? 'Try adjusting your filters'
-                    : 'Orders will appear here when created'
+                    ? 'Essayez d\'ajuster vos filtres'
+                    : 'Les commandes apparaîtront ici une fois créées'
                 }
               />
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order ID</TableHead>
+                    <TableHead>ID Commande</TableHead>
                     <TableHead>Table</TableHead>
-                    <TableHead>Items</TableHead>
+                    <TableHead>Articles</TableHead>
                     <TableHead>Total</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Time</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Heure</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -227,7 +229,7 @@ export default function Orders() {
                         <TableCell className="font-medium">{order.id}</TableCell>
                         <TableCell>{order.tableName}</TableCell>
                         <TableCell>
-                          {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                          {order.items.length} article{order.items.length > 1 ? 's' : ''}
                         </TableCell>
                         <TableCell className="font-medium">
                           ${order.total.toFixed(2)}
@@ -253,7 +255,7 @@ export default function Orders() {
                                 size="sm"
                                 onClick={() => handleStatusChange(order.id, nextStatus)}
                               >
-                                Mark {nextStatus}
+                                {nextStatus === 'preparing' ? 'En préparation' : nextStatus === 'ready' ? 'Prête' : nextStatus === 'served' ? 'Servie' : 'Marquer'}
                               </Button>
                             )}
                             {order.status !== 'cancelled' && order.status !== 'served' && (
@@ -263,7 +265,7 @@ export default function Orders() {
                                 className="text-destructive hover:text-destructive"
                                 onClick={() => handleStatusChange(order.id, 'cancelled')}
                               >
-                                Cancel
+                                Annuler
                               </Button>
                             )}
                           </div>
@@ -282,7 +284,7 @@ export default function Orders() {
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Order {selectedOrder?.id}</DialogTitle>
+            <DialogTitle>Commande {selectedOrder?.id}</DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-4">
@@ -297,7 +299,7 @@ export default function Orders() {
                     <div>
                       <p className="font-medium">{item.productName}</p>
                       <p className="text-sm text-muted-foreground">
-                        Qty: {item.quantity} × ${item.unitPrice.toFixed(2)}
+                        Qté : {item.quantity} × ${item.unitPrice.toFixed(2)}
                       </p>
                     </div>
                     <p className="font-medium">
@@ -320,7 +322,7 @@ export default function Orders() {
               </div>
 
               <div className="text-xs text-muted-foreground">
-                Created: {format(new Date(selectedOrder.createdAt), 'MMM d, yyyy h:mm a')}
+                Créée : {format(new Date(selectedOrder.createdAt), 'dd MMM yyyy HH:mm')}
               </div>
             </div>
           )}
@@ -331,13 +333,13 @@ export default function Orders() {
       <ConfirmDialog
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
-        title="Cancel Order"
-        description="Are you sure you want to cancel this order? This action cannot be undone."
-        confirmLabel="Cancel Order"
-        cancelLabel="Keep Order"
+        title="Annuler la commande"
+        description="Êtes-vous sûr de vouloir annuler cette commande ? Cette action ne peut pas être annulée."
+        confirmLabel="Annuler la commande"
+        cancelLabel="Conserver la commande"
         variant="destructive"
         onConfirm={() => updateStatus(confirmDialog.orderId, 'cancelled')}
       />
-    </div>
+    </AppLayout>
   );
 }
