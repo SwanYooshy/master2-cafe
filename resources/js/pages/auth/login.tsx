@@ -1,121 +1,198 @@
-import { Form, Head } from '@inertiajs/react';
+import React, { useState } from "react"
+import { Head, useForm } from "@inertiajs/react"
+import { Eye, EyeOff, Coffee, Loader2 } from "lucide-react"
 
-import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
 
-interface LoginProps {
-    status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
+type FormErrors = {
+  email?: string
+  password?: string
 }
 
-export default function Login({
-    status,
-    canResetPassword,
-    canRegister,
-}: LoginProps) {
-    return (
-        <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
-        >
-            <Head title="Log in" />
+export default function Login() {
+  const { toast } = useToast()
+  const [showPassword, setShowPassword] = useState(false)
 
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
+  // Inertia form: replaces authApi + manual loading/errors
+  const form = useForm({
+    email: "",
+    password: "",
+  })
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={5}
-                                        >
-                                            Forgot password?
-                                        </TextLink>
-                                    )}
-                                </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
+  // Client-side validation (optional). Laravel validation errors will also show via form.errors.
+  const validateForm = () => {
+    const newErrors: FormErrors = {}
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox
-                                    id="remember"
-                                    name="remember"
-                                    tabIndex={3}
-                                />
-                                <Label htmlFor="remember">Remember me</Label>
-                            </div>
+    if (!form.data.email) {
+      newErrors.email = "Email is required"
+    } else if (!/\S+@\S+\.\S+/.test(form.data.email)) {
+      newErrors.email = "Please enter a valid email"
+    }
 
-                            <Button
-                                type="submit"
-                                className="mt-4 w-full"
-                                tabIndex={4}
-                                disabled={processing}
-                                data-test="login-button"
-                            >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
-                        </div>
+    if (!form.data.password) {
+      newErrors.password = "Password is required"
+    } else if (form.data.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters"
+    }
 
-                        {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
-                                </TextLink>
-                            </div>
-                        )}
-                    </>
-                )}
-            </Form>
+    // Put these client errors into Inertia errors so the UI can display them the same way.
+    // We keep server errors too: if server returns errors, they overwrite on submit.
+    if (Object.keys(newErrors).length > 0) {
+      // @ts-expect-error: setError exists in Inertia useForm but can be typed loosely depending on setup
+      Object.entries(newErrors).forEach(([key, value]) => {
+        // @ts-expect-error
+        form.setError(key, value)
+      })
+      return false
+    }
 
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+    return true
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // clear previous client errors
+    form.clearErrors()
+
+    if (!validateForm()) return
+
+    // POST to Laravel's login route.
+    // If your backend uses a different route, change "/login".
+    form.post("/login", {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        })
+      },
+      onError: () => {
+        toast({
+          title: "Login failed",
+          description: "Invalid email or password.",
+          variant: "destructive",
+        })
+      },
+    })
+  }
+
+  const isLoading = form.processing
+  const errors = form.errors as FormErrors
+
+  return (
+    <>
+      <Head title="Login" />
+
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-secondary/30 to-background p-4">
+        <div className="w-full max-w-md animate-fade-in">
+          {/* Logo */}
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-lg">
+              <Coffee className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Smart Café</h1>
+            <p className="text-muted-foreground">Management System</p>
+          </div>
+
+          {/* Login Card */}
+          <Card className="border-0 shadow-xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl">Welcome Back</CardTitle>
+              <CardDescription>Sign in to access your café dashboard</CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={form.data.email}
+                    onChange={(e) => {
+                      form.setData("email", e.target.value)
+                      if (errors.email) form.clearErrors("email")
+                    }}
+                    className={errors.email ? "border-destructive" : ""}
+                    disabled={isLoading}
+                    autoComplete="email"
+                  />
+                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
                 </div>
-            )}
-        </AuthLayout>
-    );
+
+                {/* Password Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={form.data.password}
+                      onChange={(e) => {
+                        form.setData("password", e.target.value)
+                        if (errors.password) form.clearErrors("password")
+                      }}
+                      className={errors.password ? "border-destructive pr-10" : "pr-10"}
+                      disabled={isLoading}
+                      autoComplete="current-password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={isLoading}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+                  </div>
+                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                </div>
+
+                {/* Submit Button */}
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    "Sign In"
+                  )}
+                </Button>
+              </form>
+
+              {/* Demo Credentials */}
+              <div className="mt-6 rounded-lg bg-muted/50 p-3 text-center">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Demo credentials:</strong>
+                  <br />
+                  demo@smartcafe.com / demo123
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Footer */}
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            © 2024 Smart Café. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </>
+  )
 }

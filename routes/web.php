@@ -6,17 +6,27 @@ use Laravel\Fortify\Features;
 use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return redirect('/dashboard');
 })->name('home');
 
-Route::resource('users', UserController::class);
+Route::get('dashboard', function () {
+    return Inertia::render('dashboard');
+})->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+Route::get('orders', function () {
+    return Inertia::render('Orders');
+})->name('orders');
+
+Route::get('products', function () {
+    return Inertia::render('Products');
+})->name('products');
+
+Route::get('tables', function () {
+    return Inertia::render('Tables');
+})->name('tables');
+
+Route::get("/login", function () {
+    return Inertia::render("Auth/Login");
 });
 
 require __DIR__.'/settings.php';

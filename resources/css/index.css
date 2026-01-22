@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smart Café Design System - Warm, Professional, Clean */
+
+@layer base {
+  :root {
+    /* Warm neutral backgrounds */
+    --background: 40 20% 98%;
+    --foreground: 30 10% 15%;
+
+    /* Cards and surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 30 10% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 10% 15%;
+
+    /* Primary - Deep coffee brown */
+    --primary: 30 45% 25%;
+    --primary-foreground: 40 20% 98%;
+
+    /* Secondary - Warm cream */
+    --secondary: 35 25% 93%;
+    --secondary-foreground: 30 20% 25%;
+
+    /* Muted surfaces */
+    --muted: 35 15% 94%;
+    --muted-foreground: 30 10% 45%;
+
+    /* Accent - Warm amber */
+    --accent: 35 85% 55%;
+    --accent-foreground: 30 45% 15%;
+
+    /* Destructive */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders and inputs */
+    --border: 35 15% 88%;
+    --input: 35 15% 88%;
+    --ring: 30 45% 35%;
+
+    --radius: 0.625rem;
+
+    /* Sidebar */
+    --sidebar-background: 30 20% 12%;
+    --sidebar-foreground: 35 15% 85%;
+    --sidebar-primary: 35 85% 55%;
+    --sidebar-primary-foreground: 30 45% 15%;
+    --sidebar-accent: 30 15% 18%;
+    --sidebar-accent-foreground: 35 15% 90%;
+    --sidebar-border: 30 15% 20%;
+    --sidebar-ring: 35 85% 55%;
+
+    /* Status colors */
+    --status-pending: 45 93% 47%;
+    --status-pending-foreground: 30 45% 15%;
+    --status-preparing: 217 91% 60%;
+    --status-preparing-foreground: 0 0% 100%;
+    --status-ready: 142 71% 45%;
+    --status-ready-foreground: 0 0% 100%;
+    --status-served: 215 16% 47%;
+    --status-served-foreground: 0 0% 100%;
+    --status-cancelled: 0 72% 51%;
+    --status-cancelled-foreground: 0 0% 100%;
+    --status-free: 142 71% 45%;
+    --status-occupied: 0 72% 51%;
+
+    /* Chart colors */
+    --chart-1: 35 85% 55%;
+    --chart-2: 30 45% 35%;
+    --chart-3: 142 71% 45%;
+    --chart-4: 217 91% 60%;
+    --chart-5: 0 72% 51%;
+  }
+
+  .dark {
+    --background: 30 15% 8%;
+    --foreground: 35 15% 95%;
+
+    --card: 30 15% 12%;
+    --card-foreground: 35 15% 95%;
+
+    --popover: 30 15% 12%;
+    --popover-foreground: 35 15% 95%;
+
+    --primary: 35 85% 55%;
+    --primary-foreground: 30 15% 8%;
+
+    --secondary: 30 15% 18%;
+    --secondary-foreground: 35 15% 90%;
+
+    --muted: 30 15% 18%;
+    --muted-foreground: 35 10% 55%;
+
+    --accent: 35 85% 55%;
+    --accent-foreground: 30 15% 8%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 15% 20%;
+    --input: 30 15% 20%;
+    --ring: 35 85% 55%;
+
+    --sidebar-background: 30 20% 6%;
+    --sidebar-foreground: 35 15% 85%;
+    --sidebar-primary: 35 85% 55%;
+    --sidebar-primary-foreground: 30 15% 8%;
+    --sidebar-accent: 30 15% 12%;
+    --sidebar-accent-foreground: 35 15% 90%;
+    --sidebar-border: 30 15% 15%;
+    --sidebar-ring: 35 85% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+  }
+}
+
+@layer components {
+  /* Status badge variants */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-pending {
+    background-color: hsl(var(--status-pending) / 0.15);
+    color: hsl(var(--status-pending));
+  }
+
+  .status-preparing {
+    background-color: hsl(var(--status-preparing) / 0.15);
+    color: hsl(var(--status-preparing));
+  }
+
+  .status-ready {
+    background-color: hsl(var(--status-ready) / 0.15);
+    color: hsl(var(--status-ready));
+  }
+
+  .status-served {
+    background-color: hsl(var(--status-served) / 0.15);
+    color: hsl(var(--status-served));
+  }
+
+  .status-cancelled {
+    background-color: hsl(var(--status-cancelled) / 0.15);
+    color: hsl(var(--status-cancelled));
+  }
+
+  /* Table status */
+  .table-free {
+    @apply border-2 border-dashed;
+    border-color: hsl(var(--status-free));
+    background-color: hsl(var(--status-free) / 0.05);
+  }
+
+  .table-occupied {
+    @apply border-2;
+    border-color: hsl(var(--status-occupied));
+    background-color: hsl(var(--status-occupied) / 0.05);
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply relative overflow-hidden rounded-xl border bg-card p-6 shadow-sm transition-shadow hover:shadow-md;
+  }
+
+  .stat-card::before {
+    content: '';
+    @apply absolute top-0 left-0 h-1 w-full;
+    background: linear-gradient(90deg, hsl(var(--accent)), hsl(var(--primary)));
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    @apply backdrop-blur-sm bg-background/80;
+  }
+}

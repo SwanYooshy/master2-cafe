@@ -1,37 +1,193 @@
+import { useEffect, useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { ClipboardList, DollarSign, Users, Clock, TrendingUp, Utensils } from 'lucide-react';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { StatCard } from '@/components/shared/StatCard';
+import { LoadingState } from '@/components/shared/LoadingState';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { dashboardApi, ordersApi } from '@/services/api';
+import { DashboardStats, Order, ChartData } from '@/types';
+import { StatusBadge } from '@/components/shared/StatusBadge';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard().url,
-    },
-];
+const CHART_COLORS = ['hsl(35, 85%, 55%)', 'hsl(30, 45%, 35%)', 'hsl(142, 71%, 45%)', 'hsl(217, 91%, 60%)', 'hsl(0, 72%, 51%)'];
 
 export default function Dashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [hourlyData, setHourlyData] = useState<ChartData[]>([]);
+  const [categoryData, setCategoryData] = useState<ChartData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsData, ordersData, hourly, category] = await Promise.all([
+          dashboardApi.getStats(),
+          ordersApi.getOrders(),
+          dashboardApi.getHourlyOrders(),
+          dashboardApi.getRevenueByCategory(),
+        ]);
+
+        setStats(statsData);
+        setRecentOrders(ordersData.slice(0, 5));
+        setHourlyData(hourly);
+        setCategoryData(category);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                </div>
-            </div>
-        </AppLayout>
+      <AppLayout title="Tableau de bord">
+        <Head title="Tableau de bord" />
+        <LoadingState message="Chargement du tableau de bord..." />
+      </AppLayout>
     );
+  }
+
+  return (
+    <AppLayout title="Tableau de bord">
+      <Head title="Tableau de bord" />
+      
+      <div className="space-y-6">
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            title="Commandes du jour"
+            value={stats?.ordersToday || 0}
+            icon={ClipboardList}
+            trend={{ value: 12, isPositive: true }}
+          />
+          <StatCard
+            title="Revenu du jour"
+            value={`${stats?.revenueToday.toFixed(2) || '0.00'}€`}
+            icon={DollarSign}
+            trend={{ value: 8, isPositive: true }}
+          />
+          <StatCard
+            title="Tables actives"
+            value={`${stats?.activeTables || 0} / ${stats?.totalTables || 0}`}
+            subtitle="Tables occupées"
+            icon={Users}
+          />
+          <StatCard
+            title="Commandes en attente"
+            value={stats?.pendingOrders || 0}
+            subtitle="En attente de préparation"
+            icon={Clock}
+          />
+        </div>
+
+        {/* Charts Row */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Hourly Orders Chart */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-base font-medium">
+                <TrendingUp className="inline-block mr-2 h-4 w-4" />
+                Commandes par heure
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={hourlyData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                      }}
+                    />
+                    <Bar dataKey="value" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Revenue by Category Chart */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-base font-medium">
+                <Utensils className="inline-block mr-2 h-4 w-4" />
+                Revenus par catégorie
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={2}
+                      dataKey="value"
+                      nameKey="label"
+                      label={({ label, percent }) => `${label} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {categoryData.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                      }}
+                      formatter={(value) => [`$${value}`, 'Revenu']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Orders */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-medium">Commandes récentes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {recentOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="font-medium text-sm">{order.id}</div>
+                    <div className="text-sm text-muted-foreground">{order.tableName}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {order.items.length} article{order.items.length > 1 ? 's' : ''}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-medium">${order.total.toFixed(2)}</span>
+                    <StatusBadge status={order.status} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </AppLayout>
+  );
 }
