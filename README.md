@@ -14,6 +14,10 @@ php artisan db:seed --class=OrderSeeder
 **Method:** `GET`  
 **URL:** `http://localhost:8000/api/v1/products`
 
+### Chercher un produit (catégorie et texte)
+**Method:** `GET`
+**URL:** `http://localhost:8000/api/v1/products?search={texte}&category={categorie}`
+
 ### Filtrer par catégorie
 **Method:** `GET`  
 **URL:** `http://localhost:8000/api/v1/products?category=cappuccino`

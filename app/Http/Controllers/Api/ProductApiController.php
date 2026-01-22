@@ -14,9 +14,21 @@ class ProductApiController extends Controller
     {
         $query = Product::with(['category', 'variants']);
 
-        if ($request->has('category')) {
+        if ($request->filled('category') && $request->filled('search')) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
+            })->where(function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('description', 'like', "%{$request->search}%");
+            });
+        } elseif ($request->filled('category')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        } elseif ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                  ->orWhere('description', 'like', "%{$request->search}%");
             });
         }
 

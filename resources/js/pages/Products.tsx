@@ -16,12 +16,10 @@ import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { productsApi, Product } from '@/services/api/productsApi';
-import { productCategories } from '@/services/mockData';
 
 export default function Products() {
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -33,50 +31,52 @@ export default function Products() {
   const [editStock, setEditStock] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  type Category = {
+    id: string; // slug
+    name: string;
+  };
+  const [categories, setCategories] = useState<Category[]>([]);
+
   useEffect(() => {
-    fetchProducts();
+    fetchCategories();
   }, []);
 
-  useEffect(() => {
-    filterProducts();
-  }, [products, searchQuery, categoryFilter]);
-
-  const fetchProducts = async () => {
-    setIsLoading(true);
-    try {
-      const data = await productsApi.getProducts();
-      setProducts(data);
-    } catch (error) {
+  const fetchCategories = async () => {
+  try {
+    const res = await fetch('/api/v1/categories');
+      const json = await res.json();
+      setCategories(json.data);
+    } catch (e) {
       toast({
         title: 'Erreur',
-        description: 'Échec du chargement des produits : ' + (error instanceof Error ? ` ${error.message}` : ''),
+        description: 'Impossible de charger les catégories : ' + (e instanceof Error ? ` ${e.message}` : ''),
         variant: 'destructive',
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const filterProducts = () => {
-    let filtered = [...products];
+    useEffect(() => {
+        fetchProducts();
+    }, [searchQuery, categoryFilter]);
 
-    // Filter by category
-    if (categoryFilter && categoryFilter !== 'All') {
-      filtered = filtered.filter((product) => product.category === categoryFilter);
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(query) ||
-          product.description?.toLowerCase().includes(query)
-      );
-    }
-
-    setFilteredProducts(filtered);
-  };
+    const fetchProducts = async () => {
+        setIsLoading(true);
+        try {
+            const data = await productsApi.getProducts({
+                search: searchQuery,
+                category: categoryFilter !== 'All' ? categoryFilter : undefined,
+            });
+            setProducts(data);
+        } catch (error) {
+            toast({
+            title: 'Erreur',
+            description: 'Échec du chargement des produits :' + (error instanceof Error ? ` ${error.message}` : ''),
+            variant: 'destructive',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
   const handleToggleEnabled = async (product: Product) => {
     try {
@@ -193,16 +193,18 @@ export default function Products() {
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {productCategories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                    <SelectTrigger className="w-40">
+                        <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="All">Toutes</SelectItem>
+
+                        {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                        </SelectItem>
+                        ))}
+                    </SelectContent>
                 </Select>
               </div>
             </div>
@@ -214,7 +216,7 @@ export default function Products() {
           <CardContent className="p-0">
             {isLoading ? (
               <LoadingState message="Loading products..." />
-            ) : filteredProducts.length === 0 ? (
+            ) : products.length === 0 ? (
               <EmptyState
                 icon={Package}
                 title="No products found"
@@ -237,7 +239,7 @@ export default function Products() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredProducts.map((product) => (
+                  {products.map((product) => (
                     <TableRow key={product.id} className="animate-fade-in">
                       <TableCell>
                         <div>
