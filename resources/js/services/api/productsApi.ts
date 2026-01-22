@@ -21,11 +21,13 @@ export const productsApi = {
   /**
    * Get all products
    */
-  getProducts: async (params: { search?: string; category?: string }): Promise<Product[]> => {
-    const url = new URL(`${API_BASE_URL}/products`);
+  getProducts: async (params: { search?: string; category?: string, id?: string }): Promise<Product[]> => {
+    let url = new URL(`${API_BASE_URL}/products`);
     if (params.search) url.searchParams.append('search', params.search);
     if (params.category) url.searchParams.append('category', params.category);
-
+    if (params.id) {
+        url = new URL(`${API_BASE_URL}/products/${params.id}/`);
+    }
     const response = await fetch(url, {
       headers: {
         'Accept': 'application/json',

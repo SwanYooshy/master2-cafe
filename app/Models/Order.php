@@ -14,6 +14,8 @@ class Order extends Model
     protected $fillable = [
         'price',
         'table_id',
+        'status',
+        'notes',
     ];
 
     protected $casts = [
@@ -28,6 +30,7 @@ class Order extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class)
-            ->withPivot(['quantity', 'unit_price']);
+            ->withPivot(['quantity', 'unit_price'])
+            ->withTimestamps();
     }
 }

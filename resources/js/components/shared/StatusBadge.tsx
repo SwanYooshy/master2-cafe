@@ -1,5 +1,5 @@
-import { OrderStatus, TableStatus } from '@/types';
 import { cn } from '@/lib/utils';
+import { OrderStatus, TableStatus } from '@/types';
 
 interface StatusBadgeProps {
   status: OrderStatus | TableStatus;
@@ -15,12 +15,12 @@ const orderStatusLabels: Record<OrderStatus, string> = {
 };
 
 const tableStatusLabels: Record<TableStatus, string> = {
-  free: 'Free',
-  occupied: 'Occupied',
+  libre: 'Libre',
+  occuper: 'Occuper',
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const label = status in orderStatusLabels 
+  const label = status in orderStatusLabels
     ? orderStatusLabels[status as OrderStatus]
     : tableStatusLabels[status as TableStatus];
 

@@ -16,13 +16,13 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => (string) $this->id,
-            'price' => (float) $this->price,
-            'table' => [
-                'id' => (string) $this->table->id,
-                'name' => $this->table->name,
-            ],
-            'products' => OrderProductResource::collection($this->whenLoaded('products')),
+            'total' => (float) $this->price,
+            'tableName' => $this->table->name,
+            'tableId' => (string) $this->table->id,
+            'items' => OrderProductResource::collection($this->whenLoaded('products')),
             'createdAt' => $this->created_at->toDateTimeString(),
+            'status' => $this->status,
+            'notes' => $this->notes,
         ];
     }
 }

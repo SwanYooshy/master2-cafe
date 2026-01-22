@@ -1,40 +1,23 @@
-import { useEffect, useState } from 'react';
 import { Head } from '@inertiajs/react';
-import { Filter, Search, X, Eye } from 'lucide-react';
-import { AppLayout } from '@/components/layout/AppLayout';
-import { StatusBadge } from '@/components/shared/StatusBadge';
-import { LoadingState } from '@/components/shared/LoadingState';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { ordersApi } from '@/services/api';
-import { Order, OrderStatus } from '@/types';
-import { orderStatuses } from '@/services/mockData';
-import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { Filter, Search, X, Eye } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { AppLayout } from '@/components/layout/AppLayout';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { EmptyState } from '@/components/shared/EmptyState';
+import { LoadingState } from '@/components/shared/LoadingState';
+import { StatusBadge } from '@/components/shared/StatusBadge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useToast } from '@/hooks/use-toast';
+import { ordersApi, Order, OrderStatus } from '@/services/api/ordersApi';
+import { productsApi } from '@/services/api/productsApi';
+import { orderStatuses } from '@/services/mockData';
 
 export default function Orders() {
   const { toast } = useToast();
@@ -50,10 +33,19 @@ export default function Orders() {
     orderId: string;
     action: OrderStatus;
   }>({ open: false, orderId: '', action: 'pending' });
+  const [productNames, setProductNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  useEffect(() => {
+    if (!selectedOrder) return;
+
+    selectedOrder.items.forEach(item => {
+        fetchProductName(item.id);
+    });
+  }, [selectedOrder]);
 
   useEffect(() => {
     filterOrders();
@@ -67,7 +59,7 @@ export default function Orders() {
     } catch (error) {
       toast({
         title: 'Erreur',
-        description: 'Échec du chargement des commandes',
+        description: 'Échec du chargement des commandes :' + (error instanceof Error ? ` ${error.message}` : ''),
         variant: 'destructive',
       });
     } finally {
@@ -121,7 +113,7 @@ export default function Orders() {
     } catch (error) {
       toast({
         title: 'Erreur',
-        description: 'Échec de la mise à jour du statut',
+        description: 'Échec de la mise à jour du statut de la commande : ' + (error instanceof Error ? ` ${error.message}` : ''),
         variant: 'destructive',
       });
     }
@@ -141,6 +133,25 @@ export default function Orders() {
       cancelled: null,
     };
     return flow[currentStatus];
+  };
+  const fetchProductName = async (id: string) => {
+    if (productNames[id]) return;
+
+    try {
+        const product = await productsApi.getProducts({ id });
+        if (product) {
+            setProductNames(prev => ({
+                ...prev,
+                [id]: product.name,
+
+            }));
+        }
+    } catch {
+        setProductNames(prev => ({
+        ...prev,
+        [id]: 'Produit non trouvé',
+        }));
+    }
   };
 
   return (
@@ -294,10 +305,10 @@ export default function Orders() {
               </div>
 
               <div className="border rounded-lg divide-y">
-                {selectedOrder.items.map((item) => (
+                {selectedOrder.items.map(item => (
                   <div key={item.id} className="p-3 flex justify-between">
                     <div>
-                      <p className="font-medium">{item.productName}</p>
+                      <p className="font-medium">{productNames[item.id] ?? 'Chargement...'}</p>
                       <p className="text-sm text-muted-foreground">
                         Qté : {item.quantity} × ${item.unitPrice.toFixed(2)}
                       </p>

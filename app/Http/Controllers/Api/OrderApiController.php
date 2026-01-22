@@ -26,6 +26,7 @@ class OrderApiController extends Controller
     {
         $validated = $request->validate([
             'table_id' => 'required|exists:tables,id',
+            'notes' => 'nullable|string',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -33,7 +34,9 @@ class OrderApiController extends Controller
 
         $order = Order::create([
             'table_id' => $validated['table_id'],
+            'notes' => $validated['notes'] ?? null,
             'price' => 0,
+            'status' => 'pending',
         ]);
 
         $total = 0;
@@ -56,6 +59,20 @@ class OrderApiController extends Controller
             ->response()
             ->setStatusCode(201);
     }
+
+    public function update(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'sometimes|in:pending,preparing,ready,served,cancelled',
+            'notes' => 'sometimes|nullable|string',
+        ]);
+
+        $order->update($validated);
+        $order->load(['table', 'products']);
+
+        return new OrderResource($order);
+    }
+
 
     public function destroy(Order $order)
     {

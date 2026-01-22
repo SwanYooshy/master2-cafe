@@ -19,7 +19,7 @@ class OrderProductResource extends JsonResource
             'name' => $this->name,
             'quantity' => $this->pivot->quantity,
             'unitPrice' => (float) $this->pivot->unit_price,
-            'total' => $this->pivot->quantity * $this->pivot->unit_price,
+            // 'total' => $this->pivot->quantity * $this->pivot->unit_price,
         ];
     }
 }

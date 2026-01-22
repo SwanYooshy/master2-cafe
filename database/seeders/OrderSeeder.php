@@ -23,13 +23,17 @@ class OrderSeeder extends Seeder
         }
 
         $ordersCount = 15;
+        $statuses = ['pending', 'preparing', 'ready', 'served'];
 
         for ($i = 0; $i < $ordersCount; $i++) {
             $table = $tables->random();
             $order = Order::create([
                 'table_id' => $table->id,
                 'price' => 0,
+                'status' => $statuses[array_rand($statuses)],
+                'notes' => rand(0, 1) ? 'Note de commande exemple' : null,
             ]);
+
             $orderProducts = $products->random(rand(1, 4));
             $total = 0;
 
@@ -44,9 +48,9 @@ class OrderSeeder extends Seeder
                 ]);
             }
 
-            $order->update([
-                'price' => $total,
-            ]);
+            $order->update(['price' => $total]);
         }
+
+        $this->command->info("$ordersCount commandes créées avec succès.");
     }
 }
