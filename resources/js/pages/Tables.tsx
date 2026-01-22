@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react';
 import { Head } from '@inertiajs/react';
 import { Users, ClipboardList, Grid3X3 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { AppLayout } from '@/components/layout/AppLayout';
-import { LoadingState } from '@/components/shared/LoadingState';
-import { EmptyState } from '@/components/shared/EmptyState';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { EmptyState } from '@/components/shared/EmptyState';
+import { LoadingState } from '@/components/shared/LoadingState';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { tablesApi } from '@/services/api';
-import { Table as TableType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { tablesApi } from '@/services/api';
+import { Table as TableType } from '@/types';
 
 export default function Tables() {
   const { toast } = useToast();
@@ -36,7 +37,7 @@ export default function Tables() {
     } catch (error) {
       toast({
         title: 'Erreur',
-        description: 'Échec du chargement des tables',
+        description: 'Échec du chargement des tables :' + (error instanceof Error ? ` ${error.message}` : ''),
         variant: 'destructive',
       });
     } finally {
@@ -46,7 +47,7 @@ export default function Tables() {
 
   const handleStatusChange = (table: TableType) => {
     const newStatus = table.status === 'free' ? 'occupied' : 'free';
-    
+
     if (newStatus === 'free' && table.activeOrders > 0) {
       setConfirmDialog({
         open: true,
@@ -74,7 +75,7 @@ export default function Tables() {
     } catch (error) {
       toast({
         title: 'Erreur',
-        description: 'Échec de la mise à jour du statut de la table',
+        description: 'Échec de la mise à jour du statut de la table : ' + (error instanceof Error ? ` ${error.message}` : ''),
         variant: 'destructive',
       });
     }
@@ -164,8 +165,8 @@ export default function Tables() {
                     <Badge
                       variant={table.status === 'free' ? 'outline' : 'destructive'}
                       className={cn(
-                        table.status === 'free' 
-                          ? 'border-status-free text-status-free' 
+                        table.status === 'free'
+                          ? 'border-status-free text-status-free'
                           : 'bg-status-occupied'
                       )}
                     >

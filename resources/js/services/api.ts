@@ -1,15 +1,16 @@
 /**
  * API Service Layer
- * 
+ *
  * This file contains placeholder functions for API calls.
  * Replace the mock implementations with actual API calls when connecting to a backend.
  */
 
 import { Order, Product, Table, DashboardStats, OrderStatus, User } from '@/types';
-import { 
-  mockOrders, 
-  mockProducts, 
-  mockTables, 
+
+import {
+  mockOrders,
+  mockProducts,
+  mockTables,
   mockDashboardStats,
   currentUser,
   mockHourlyOrders,
@@ -28,12 +29,12 @@ export const authApi = {
    */
   login: async (email: string, password: string): Promise<User> => {
     await delay(800); // Simulate network delay
-    
+
     // Mock validation - replace with actual API call
     if (email === 'demo@smartcafe.com' && password === 'demo123') {
       return currentUser;
     }
-    
+
     throw new Error('Invalid email or password');
   },
 
@@ -65,7 +66,7 @@ export const ordersApi = {
    */
   getOrders: async (status?: OrderStatus): Promise<Order[]> => {
     await delay(400);
-    
+
     if (status && status !== 'all' as any) {
       return mockOrders.filter(order => order.status === status);
     }
@@ -87,14 +88,14 @@ export const ordersApi = {
    */
   updateOrderStatus: async (orderId: string, status: OrderStatus): Promise<Order> => {
     await delay(300);
-    
+
     const order = mockOrders.find(o => o.id === orderId);
     if (!order) throw new Error('Order not found');
-    
+
     // In real implementation, this would update the backend
     order.status = status;
     order.updatedAt = new Date().toISOString();
-    
+
     return order;
   },
 
@@ -134,13 +135,13 @@ export const productsApi = {
    */
   updateProduct: async (id: string, updates: Partial<Product>): Promise<Product> => {
     await delay(300);
-    
+
     const productIndex = mockProducts.findIndex(p => p.id === id);
     if (productIndex === -1) throw new Error('Product not found');
-    
+
     // In real implementation, this would update the backend
     mockProducts[productIndex] = { ...mockProducts[productIndex], ...updates };
-    
+
     return mockProducts[productIndex];
   },
 
@@ -150,10 +151,10 @@ export const productsApi = {
    */
   toggleProductEnabled: async (id: string): Promise<Product> => {
     await delay(200);
-    
+
     const product = mockProducts.find(p => p.id === id);
     if (!product) throw new Error('Product not found');
-    
+
     product.enabled = !product.enabled;
     return product;
   },
@@ -186,15 +187,15 @@ export const tablesApi = {
    */
   updateTableStatus: async (id: string, status: 'free' | 'occupied'): Promise<Table> => {
     await delay(300);
-    
+
     const table = mockTables.find(t => t.id === id);
     if (!table) throw new Error('Table not found');
-    
+
     table.status = status;
     if (status === 'free') {
       table.activeOrders = 0;
     }
-    
+
     return table;
   },
 };
