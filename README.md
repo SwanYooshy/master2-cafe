@@ -247,6 +247,6 @@ Body (raw - JSON):
 
 Pour voir la démo de l'application ainsi que du back office, se rendre dans le dossier docs/
 
-## Documentation du back-office
+## Documentation de l'application front
 
 https://github.com/dardaelliande/master2-cafe-expo
