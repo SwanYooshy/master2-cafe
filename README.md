@@ -22,17 +22,7 @@ cd master2-cafe-expo
 npm install
 composer install
 ```
-
-3. **Lancer l'application**
-```bash
-php artisan serve
-```
-et dans un autre terminal :
-```
-npm run build
-```
-
-## lancement des factories (fournir en données la base de données) :
+3. **lancement des factories (fournir en données la base de données) :**
 ```bash
 php artisan db:seed --class=ProductSeeder
 php artisan db:seed --class=TablesSeeder
@@ -40,6 +30,17 @@ php artisan db:seed --class=CategorySeeder
 php artisan db:seed --class=OrderSeeder
 ```
 **Sinon pour tout exécuter en une commande:** `php artisan db:seed`
+
+4. **Lancer l'application**
+```bash
+php artisan serve
+```
+et dans un autre terminal :
+```
+npm run build
+puis
+npm run dev
+```
 
 ## Liste des commandes d'Api
 ## Produits
@@ -135,6 +136,7 @@ variants[2][name]: Large
 variants[2][price]: 5.50
 ```
 
+
 ## Tables
 ### Lister toutes les tables de l'établissement
 **Method:** `GET`  
@@ -170,10 +172,6 @@ Body (raw - JSON):
 }
 ```
 
-### Supprimer une table
-**Method:** `DELETE`  
-**URL:** `http://localhost:8000/api/v1/tables/1`
-
 ### Modifier l'état d'une table  
 **Method** `PATCH`  
 **URL:** `http://localhost:8000/api/v1/tables/{id}/status`  
@@ -186,6 +184,11 @@ Body (raw - JSON):
   "status" : "libre"
 }
 ```
+
+### Supprimer une table
+**Method:** `DELETE`  
+**URL:** `http://localhost:8000/api/v1/tables/1`  
+
 
 ## Orders (les commandes client)
 ### Lister toutes les commandes
