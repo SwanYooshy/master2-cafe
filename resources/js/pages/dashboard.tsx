@@ -71,19 +71,21 @@ export default function Dashboard() {
         }, 0);
         setStats(prev => prev ? { ...prev, revenueToday } : null);
 
+        const allProducts = await productsApi.getProducts({});
+        const productMap = new Map(allProducts.map(p => [p.id, p]));
         const ordersCompleted = ordersData.filter(order => order.status === 'served');
         const categoryRevenueMap: Record<string, number> = {};
         for (const order of ordersCompleted) {
             for (const item of order.items) {
-                const product = await productsApi.getProducts({ id: item.id });
-                const category = product ? product.category : 'Inconnu';
-                if (!categoryRevenueMap[category]) {
-                    categoryRevenueMap[category] = 0;
-                }
-                    categoryRevenueMap[category] += item.unitPrice * item.quantity;
+                const product = productMap.get(item.id);
+                const category = product?.category ?? 'Inconnu';
+                const itemRevenue = item.unitPrice * item.quantity;
+                categoryRevenueMap[category] = parseFloat(((categoryRevenueMap[category] ?? 0) + itemRevenue).toFixed(2));
             }
         }
-        const categoryDataArray: ChartData[] = Object.entries(categoryRevenueMap).map(([label, value]) => ({ label, value }));
+        const categoryDataArray: ChartData[] = Object.entries(categoryRevenueMap).map(
+            ([label, value]) => ({ label, value })
+        );
         setCategoryData(categoryDataArray);
 
         const sortedOrders = ordersData.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
