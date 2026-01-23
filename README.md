@@ -242,3 +242,11 @@ Body (raw - JSON):
 ### Supprimer une commande
 **Method:** `DELETE`  
 **URL:** `http://localhost:8000/api/v1/orders/1`  
+
+## Démonstrations
+
+Pour voir la démo de l'application ainsi que du back office, se rendre dans le dossier docs/
+
+## Documentation du back-office
+
+https://github.com/dardaelliande/master2-cafe-expo
