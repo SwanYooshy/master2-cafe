@@ -163,8 +163,8 @@ export default function Products() {
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to update product',
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour le produit',
         variant: 'destructive',
       });
     } finally {
@@ -213,7 +213,7 @@ export default function Products() {
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Category" />
+                    <SelectValue placeholder="Catégorie" />
                   </SelectTrigger>
                   <SelectContent>
                     {productCategories.map((category) => (
@@ -232,15 +232,15 @@ export default function Products() {
         <Card>
           <CardContent className="p-0">
             {isLoading ? (
-              <LoadingState message="Loading products..." />
+              <LoadingState message="Chargement des produits..." />
             ) : filteredProducts.length === 0 ? (
               <EmptyState
                 icon={Package}
-                title="No products found"
+                title="Aucun produit trouvé"
                 description={
                   searchQuery || categoryFilter !== 'All'
-                    ? 'Try adjusting your filters'
-                    : 'Add products to get started'
+                    ? 'Essayez d\'ajuster vos filtres'
+                    : 'Ajoutez des produits pour commencer'
                 }
               />
             ) : (
@@ -272,7 +272,7 @@ export default function Products() {
                         <Badge variant="outline">{product.category}</Badge>
                       </TableCell>
                       <TableCell className="font-medium">
-                        ${product.price.toFixed(2)}
+                        {product.price.toFixed(2)}€
                       </TableCell>
                       <TableCell>
                         <Badge variant={getStockBadgeVariant(product.stock)}>
@@ -324,7 +324,7 @@ export default function Products() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Prix ($)</Label>
+                  <Label htmlFor="price">Prix (€)</Label>
                   <Input
                     id="price"
                     type="number"

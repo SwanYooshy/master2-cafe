@@ -79,13 +79,13 @@ export function useOrderNotifications(): UseOrderNotificationsReturn {
     setNotifications(prev => [newNotification, ...prev].slice(0, 50)); // Keep last 50
 
     // Play sound if enabled
-    if (soundEnabled) {
-      if (notification.type === 'new_order') {
-        playSound('newOrder');
-      } else {
-        playSound('statusChange');
-      }
-    }
+    // if (soundEnabled) {
+    //   if (notification.type === 'new_order') {
+    //     playSound('newOrder');
+    //   } else {
+    //     playSound('statusChange');
+    //   }
+    // }
   }, [soundEnabled]);
 
   // Simulate incoming orders (for demo - replace with real WebSocket/polling in production)
@@ -96,7 +96,7 @@ export function useOrderNotifications(): UseOrderNotificationsReturn {
         type: 'new_order',
         orderId: order.id!,
         tableName: order.tableName!,
-        message: `New order from ${order.tableName}: ${order.items?.length} item${order.items?.length !== 1 ? 's' : ''} - $${order.total?.toFixed(2)}`,
+        message: `Nouvelle commande de ${order.tableName}: ${order.items?.length} article${order.items?.length !== 1 ? 's' : ''} - ${order.total?.toFixed(2)}€`,
       });
     };
 
@@ -106,11 +106,18 @@ export function useOrderNotifications(): UseOrderNotificationsReturn {
       const randomIndex = Math.floor(Math.random() * statuses.length);
       const table = mockTables[Math.floor(Math.random() * mockTables.length)];
       
+      const statusLabels: Record<OrderStatus, string> = {
+        'pending': 'en attente',
+        'preparing': 'en préparation',
+        'ready': 'prête',
+        'served': 'servie'
+      };
+      
       addNotification({
         type: 'status_change',
         orderId: `ORD-${String(Date.now()).slice(-6)}`,
         tableName: table.name,
-        message: `Order for ${table.name} is now ${statuses[randomIndex]}`,
+        message: `Commande pour ${table.name} est maintenant ${statusLabels[statuses[randomIndex]]}`,
         previousStatus: prevStatuses[randomIndex],
         newStatus: statuses[randomIndex],
       });

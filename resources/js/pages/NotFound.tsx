@@ -11,15 +11,15 @@ const NotFound = () => {
         </div>
         
         <h1 className="mb-2 text-6xl font-bold text-foreground">404</h1>
-        <p className="mb-1 text-xl font-medium text-foreground">Page not found</p>
+        <p className="mb-1 text-xl font-medium text-foreground">Page introuvable</p>
         <p className="mb-8 text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          La page que vous cherchez n'existe pas ou a été déplacée.
         </p>
         
         <Button asChild>
           <Link to="/dashboard">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+            Retour au tableau de bord
           </Link>
         </Button>
       </div>

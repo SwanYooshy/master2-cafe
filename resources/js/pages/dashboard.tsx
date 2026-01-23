@@ -150,7 +150,7 @@ export default function Dashboard() {
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px',
                       }}
-                      formatter={(value) => [`$${value}`, 'Revenu']}
+                      formatter={(value) => [`${value}€`, 'Revenu']}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -179,7 +179,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-medium">${order.total.toFixed(2)}</span>
+                    <span className="font-medium">{order.total.toFixed(2)}€</span>
                     <StatusBadge status={order.status} />
                   </div>
                 </div>

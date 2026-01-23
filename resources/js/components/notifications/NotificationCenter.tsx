@@ -52,7 +52,7 @@ export function NotificationCenter({
               size="icon"
               className="h-8 w-8"
               onClick={onToggleSound}
-              title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
+              title={soundEnabled ? 'Couper le son' : 'Activer le son'}
             >
               {soundEnabled ? (
                 <Volume2 className="h-4 w-4 text-primary" />
@@ -67,7 +67,7 @@ export function NotificationCenter({
                   size="icon"
                   className="h-8 w-8"
                   onClick={onMarkAllAsRead}
-                  title="Mark all as read"
+                  title="Tout marquer comme lu"
                 >
                   <Check className="h-4 w-4" />
                 </Button>
@@ -76,7 +76,7 @@ export function NotificationCenter({
                   size="icon"
                   className="h-8 w-8"
                   onClick={onClear}
-                  title="Clear all"
+                  title="Tout effacer"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -89,9 +89,9 @@ export function NotificationCenter({
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <Bell className="h-10 w-10 text-muted-foreground/50 mb-2" />
-            <p className="text-sm text-muted-foreground">No notifications yet</p>
+            <p className="text-sm text-muted-foreground">Aucune notification</p>
             <p className="text-xs text-muted-foreground/70">
-              You'll see order alerts here
+              Les alertes de commandes apparaîtront ici
             </p>
           </div>
         ) : (
@@ -157,7 +157,7 @@ export function NotificationCenter({
                 className="w-full text-sm"
                 onClick={onMarkAllAsRead}
               >
-                Mark all as read
+                Tout marquer comme lu
               </Button>
             </div>
           </>

@@ -7,16 +7,16 @@ interface StatusBadgeProps {
 }
 
 const orderStatusLabels: Record<OrderStatus, string> = {
-  pending: 'Pending',
-  preparing: 'Preparing',
-  ready: 'Ready',
-  served: 'Served',
-  cancelled: 'Cancelled',
+  pending: 'En attente',
+  preparing: 'En préparation',
+  ready: 'Prête',
+  served: 'Servie',
+  cancelled: 'Annulée',
 };
 
 const tableStatusLabels: Record<TableStatus, string> = {
-  free: 'Free',
-  occupied: 'Occupied',
+  free: 'Libre',
+  occupied: 'Occupée',
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
