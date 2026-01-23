@@ -36,8 +36,12 @@ export default function Orders() {
   const [productNames, setProductNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchOrders();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, statusFilter]);
 
   useEffect(() => {
     if (!selectedOrder) return;
@@ -54,7 +58,7 @@ export default function Orders() {
   const fetchOrders = async () => {
     setIsLoading(true);
     try {
-      const data = await ordersApi.getOrders();
+      const data = await ordersApi.getOrders({ status: statusFilter, search: searchQuery });
       setOrders(data);
     } catch (error) {
       toast({

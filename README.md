@@ -192,6 +192,10 @@ Body (raw - JSON):
 **Method:** `GET`  
 **URL:** `http://localhost:8000/api/v1/orders`  
 
+### Filtrer et rechercher les commandes
+**Method:** `GET`  
+**URL:** `http://localhost:8000/api/v1/orders?status={status}&search={recherche}`  
+
 ### Afficher une commande
 **Method:** `GET`  
 **URL:** `http://localhost:8000/api/v1/orders/1`  

@@ -10,9 +10,26 @@ use App\Http\Resources\OrderResource;
 
 class OrderApiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['table', 'products'])->latest()->get();
+        $query = Order::with(['table', 'products']);
+
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('id', 'like', '%' . $searchTerm . '%')
+                ->orWhereHas('table', function ($tableQuery) use ($searchTerm) {
+                    $tableQuery->where('name', 'like', '%' . $searchTerm . '%');
+                });
+            });
+        }
+
+        $orders = $query->latest()->get();
+
         return OrderResource::collection($orders);
     }
 

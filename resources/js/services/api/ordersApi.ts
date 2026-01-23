@@ -22,10 +22,22 @@ const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 export const ordersApi = {
   /**
-   * Get all orders
+   * Get all orders with optional filters
    */
-  getOrders: async (): Promise<Order[]> => {
-    const response = await fetch(`${API_BASE_URL}/orders`, {
+  getOrders: async (filters?: { status?: string; search?: string }): Promise<Order[]> => {
+    const params = new URLSearchParams();
+
+    if (filters?.status && filters.status !== 'all') {
+      params.append('status', filters.status);
+    }
+
+    if (filters?.search) {
+      params.append('search', filters.search);
+    }
+
+    const url = `${API_BASE_URL}/orders${params.toString() ? `?${params.toString()}` : ''}`;
+
+    const response = await fetch(url, {
       headers: {
         'Accept': 'application/json',
       },
